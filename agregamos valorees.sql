@@ -1,0 +1,22 @@
+INSERT INTO cursos (lineas_de_enfasis, disponibilidad, cupos)
+VALUES
+  ('Montaje audiovisual', TRUE, 30),
+  ('Sonido y producción musical', TRUE, 25),
+  ('Gestión de marcas', FALSE, 20),
+  ('Animación digital', TRUE, 15),
+  ('Fotografía comercial', TRUE, 10),
+  ('Diseño de productos y servicios', TRUE, 18),
+  ('Desarrollo de videojuegos', FALSE, 12),
+  ('Marketing digital y comercio electrónico', TRUE, 22),
+  ('Inteligencia artificial para mercadeo', TRUE, 20),
+  ('Big Data y analítica de negocios', FALSE, 17),
+  ('Transformación digital en empresas', TRUE, 14),
+  ('Gestión de proyectos de construcción sostenible', TRUE, 16),
+  ('Diseño en estructuras de acero', FALSE, 13),
+  ('Blockchain y Web 3.0', TRUE, 11),
+  ('Gestión logística en cadena de suministro', TRUE, 19),
+  ('Gestión del talento humano e innovación organizacional', FALSE, 21),
+  ('Diseño gráfico para redes sociales', TRUE, 23),
+  ('Producción audiovisual para el metaverso', TRUE, 9),
+  ('Diseño agroecológico regenerativo', FALSE, 8),
+  ('Sostenibilidad y economía circular', TRUE, 12);
