@@ -9,27 +9,16 @@
     :root {
       /* Colores principales Universidad de Medellín */
       --udem-rojo: #B71C1C;
-      /* Rojo principal UDEM */
       --udem-rojo-hover: #D32F2F;
-      /* Rojo hover más claro */
       --udem-rojo-claro: #FFEBEE;
-      /* Fondo rojo muy suave */
       --udem-blanco: #FFFFFF;
-      /* Blanco oficial */
       --udem-gris-claro: #F5F5F5;
-      /* Gris muy claro */
       --udem-gris-medio: #757575;
-      /* Gris para textos secundarios */
       --udem-gris-oscuro: #424242;
-      /* Gris para textos principales */
       --udem-azul-secundario: #1976D2;
-      /* Azul como color de apoyo */
       --udem-azul-hover: #1565C0;
-      /* Azul hover */
       --udem-verde-exito: #388E3C;
-      /* Verde para éxito */
       --udem-amarillo: #FFA000;
-      /* Amarillo/naranja para advertencias */
     }
 
     /* Clases Tailwind personalizadas para UDEM */
@@ -312,7 +301,7 @@
                 </tr>
               </thead>
               <tbody id="solicitudes-tbody" class="text-gray-700">
-                </tbody>
+              </tbody>
             </table>
           </div>
         </section>
@@ -1577,11 +1566,8 @@
     // Inicializar (carga desde storage si existe)
     loadSavedNotas();
 
-    // ==================== ASISTENTE VIRTUAL LÓGICA (CON ESPACIO PARA API) ====================
+    // ==================== ASISTENTE VIRTUAL LÓGICA (CONECTADO A BACKEND) ====================
     document.addEventListener('DOMContentLoaded', () => {
-      // --- CONFIGURACIÓN DEL ASISTENTE ---
-      const GEMINI_API_KEY = "TU_API_KEY_AQUI"; // <--- ⚠️ Pega tu API Key aquí
-
       // --- ELEMENTOS DEL DOM ---
       const openChatBtn = document.getElementById('open-chat-btn');
       const closeChatBtn = document.getElementById('close-chat-btn');
@@ -1604,11 +1590,9 @@
         addMessage(userText, 'user');
         chatInput.value = '';
 
-        // Simular que el asistente "piensa"
         addMessage("...", 'assistant');
         const assistantResponse = await getAssistantResponse(userText);
 
-        // Actualizar el mensaje "pensando" con la respuesta real
         const thinkingMessage = chatBody.lastChild;
         thinkingMessage.innerHTML = `<p>${assistantResponse}</p>`;
       };
@@ -1630,57 +1614,53 @@
         chatBody.scrollTop = chatBody.scrollHeight;
       }
 
-      // --- LÓGICA PRINCIPAL DEL ASISTENTE ---
+      // --- LÓGICA PRINCIPAL DEL ASISTENTE (CORREGIDA) ---
       async function getAssistantResponse(userInput) {
-        // Si no hay API key, usa el cerebro del prototipo
-        if (GEMINI_API_KEY === "TU_API_KEY_AQUI" || GEMINI_API_KEY === "") {
-          return getPrototypeResponse(userInput);
-        }
-        // Si hay API key, intenta usar la IA real
         try {
+          // Siempre intenta llamar a la función real (que ahora apunta a tu backend)
           const response = await getRealAIResponse(userInput);
           return response;
         } catch (error) {
-          console.error("Error llamando a la API:", error);
-          return "Hubo un problema conectando con la IA. Por favor, revisa la consola para más detalles.";
+          console.error("Error llamando al backend:", error);
+          // Si el backend falla (ej. no está corriendo), usa las respuestas de prototipo como plan B
+          return getPrototypeResponse(userInput);
         }
       }
 
-      // --- CEREBRO REAL (SIMULADO) CONECTADO A UNA API ---
+      // --- CEREBRO REAL CONECTADO A TU BACKEND SEGURO (CORREGIDO) ---
       async function getRealAIResponse(userInput) {
-        // Aquí iría la URL de tu backend o proxy que llama a la API de Gemini
-        const API_URL = "https://tu-backend.com/api/chat"; // URL de ejemplo
+        
+        // 1. La URL ahora apunta a TU PROPIO SERVIDOR
+        const API_URL = 'http://localhost:3000/api/chat';
 
-        // Aquí se define el contexto para que la IA sepa cómo responder
-        const systemPrompt = `Eres un asistente virtual de la Universidad de Medellín. Tu rol es ayudar a los estudiantes a elegir su línea de énfasis. Sé amable y directo. Usa la siguiente información para responder: ${JSON.stringify(lineasData)}`;
-        
-        console.log("Enviando a la API (simulado):", userInput);
-        
-        /* // --- DESCOMENTA ESTE BLOQUE CUANDO TENGAS UN BACKEND REAL ---
-        
+        // 2. El prompt completo que ya estabas construyendo
+        const fullPrompt = `
+        **Instrucciones:** Eres un asistente virtual amigable de la Universidad de Medellín. Tu única función es ayudar a estudiantes a elegir su línea de énfasis. No respondas a preguntas que no estén relacionadas con este tema. Basa tus respuestas únicamente en la siguiente información en formato JSON.
+
+        **Datos:**
+        ${JSON.stringify(lineasData)}
+
+        **Pregunta del estudiante:**
+        "${userInput}"
+        `;
+
+        // 3. La llamada a TU backend
         const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // La API Key se debería manejar en el backend, no aquí
-          },
-          body: JSON.stringify({
-            prompt: userInput,
-            context: systemPrompt 
-          })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: fullPrompt }) // Envía el prompt
         });
 
         if (!response.ok) {
-          throw new Error(`Error de red: ${response.statusText}`);
+            const errorData = await response.json();
+            throw new Error(`Error de tu backend: ${errorData.error}`);
         }
 
+        // 4. Tu backend ya procesa la respuesta, así que solo la recibes
         const data = await response.json();
-        return data.response; // Asegúrate que tu backend devuelva un objeto con la clave "response"
-        */
-        
-        // --- RESPUESTA SIMULADA (BORRA ESTO CUANDO USES EL FETCH REAL) ---
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simula espera de red
-        return `(Respuesta simulada de IA) ¡Hola! He recibido tu pregunta: "${userInput}". Aún no estoy conectado a una IA real, pero cuando mi desarrollador me conecte, podré darte respuestas mucho más inteligentes.`;
+        return data.response; // Tu backend envía un objeto: { response: "..." }
       }
 
       // --- CEREBRO DEL PROTOTIPO (RESPUESTAS PREDEFINIDAS) ---
@@ -1744,7 +1724,7 @@
       <span class="text-3xl">🤖</span>
     </button>
     <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border
-                             transform transition-all origin-bottom-right">
+                               transform transition-all origin-bottom-right">
       <div class="bg-udem-azul text-white p-4 rounded-t-2xl flex justify-between items-center">
         <div>
           <h3 class="font-bold">Asistente de Orientación</h3>
