@@ -11,8 +11,9 @@ app.use(express.json()); // Permite al servidor entender JSON
 
 // 3. Leer la API key de forma SEGURA desde el archivo .env
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
-
+// Pega esta línea en su lugar
+// Pega esta línea en su lugar
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${GEMINI_API_KEY}`;
 // 4. Crear el endpoint (la URL que llamará tu frontend)
 app.post('/api/chat', async (req, res) => {
     try {
@@ -60,3 +61,4 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Servidor backend escuchando en http://localhost:${PORT} 🚀`);
 });
+console.log("¡¡¡ESTOY CORRIENDO LA VERSIÓN NUEVA Y GUARDADA!!! 🚀🚀🚀");
